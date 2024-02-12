@@ -3,6 +3,7 @@ import Login from "./pages/login/Login";
 import {getToken} from "./util/TokenUtil";
 import Dashboard from "./pages/dashboard/Dashboard";
 
+
 export const formatDate = (fetchedDate) =>{
     const date = new Date(fetchedDate);
     const year = date.getFullYear();
@@ -19,7 +20,7 @@ class App extends React.Component{
         return(
             <React.Fragment>
                 {getToken() ?
-                    <Dashboard/> :
+                    <Dashboard /> :
                     <Login/>
                 }
             </React.Fragment>

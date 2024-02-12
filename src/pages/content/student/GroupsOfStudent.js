@@ -46,9 +46,10 @@ class GroupsOfStudent extends Component {
         })
             .then((res) => {
                 let dto = res.data;
+                console.log(dto);
                 if (dto.success) {
                     this.setState({
-                        dataSource: dto.data.content,
+                        dataSource: dto.data,
                     })
                 } else {
                     alert(dto.message)
@@ -111,8 +112,12 @@ class GroupsOfStudent extends Component {
 
         const {dataSource, isHomeworkVisible} = this.state;
 
-        return (
-            <Fragment>
+        return (<div>
+            {isHomeworkVisible ? <Homework
+                isHomeworkVisible={isHomeworkVisible}
+                onSuccess={this.handleSuccess}
+                onClose={this.hideModal}
+            /> : <Fragment>
                 <div style={{width: '100%', display: "flex", justifyContent: "space-between"}}>
                     <h2>My groups</h2>
                     <div style={{width: '400px', float: "right", marginTop: '15px'}}>
@@ -125,13 +130,9 @@ class GroupsOfStudent extends Component {
                     pagination={false}
                 >
                 </Table>
-                {isHomeworkVisible && (<Homework
-                    isHomeworkVisible={isHomeworkVisible}
-                    onSuccess={this.handleSuccess}
-                    onClose={this.hideModal}
-                />)}
-            </Fragment>
-        );
+            </Fragment>}
+
+        </div>);
     }
 }
 

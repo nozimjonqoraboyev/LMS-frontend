@@ -14,14 +14,6 @@ class Homework extends Component {
             totalPages: 0,
             page: 0,
             size: 10,
-            isAddStudentModalVisible: false,
-            isRemoveStudentModalVisible: false,
-            isEditModalVisible: false,
-            isDeleteModalVisible: false,
-            deletingStudentId: 0,
-            deletingStudentName: '',
-            deletingId: 0,
-            isActionsInGroupVisible: true,
             record: {},
         };
     }

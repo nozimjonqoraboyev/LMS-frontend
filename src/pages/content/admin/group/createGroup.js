@@ -125,7 +125,7 @@ const CreateGroupModal = ({isAddModalVisible, onClose, onSuccess}) => {
                            rules={[{required: true, message: 'Please enter name!'}]} {...formItemLayout}  >
                     <Input placeholder='Enter name' maxLength={25} allowClear/>
                 </Form.Item>
-                <Form.Item label="Course name" name="courseId"
+                <Form.Item label="Course" name="courseId"
                            rules={[{required: true, message: 'Please select course name!'}]} {...formItemLayout}  >
                     <Select
                         placeholder='Select course'
@@ -137,7 +137,7 @@ const CreateGroupModal = ({isAddModalVisible, onClose, onSuccess}) => {
                     </Select>
 
                 </Form.Item>
-                <Form.Item label="Teacher username" name="teacherId"
+                <Form.Item label="Teacher" name="teacherId"
                            rules={[{required: true, message: 'Please select a teacher!'}]} {...formItemLayout}  >
                     <Select
                         placeholder='Select teacher'
