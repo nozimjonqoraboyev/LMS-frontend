@@ -1,6 +1,4 @@
 import React from 'react';
-// import {Route, Routes} from "react-router-dom";
-// import {routesData} from "../consts/routesData";
 import {
     MenuFoldOutlined,
     MenuUnfoldOutlined,
@@ -11,10 +9,10 @@ import ReadCourse from "../content/admin/course/readCourse";
 import ReadGroup from "../content/admin/group/readGroup";
 import ReadTeacher from "../content/admin/teacher/readTeacher";
 import ReadStudent from "../content/admin/student/readStudent";
-import {getItems} from "../../server/consts/serverConsts";
-import NotFound from "../not_found/NotFound";
 import Teacher from "../content/teacher/Teacher";
 import StudentOfGroup from "../content/teacher/StudentOfGroup";
+import {getItems} from "../../server/consts/serverConsts";
+import NotFound from "../not_found/NotFound";
 import GroupsOfStudent from "../content/student/GroupsOfStudent";
 
 
@@ -79,8 +77,7 @@ class Dashboard extends React.Component {
             } else if (role === 'ROLE_STUDENT') {
                 switch (itemNumber) {
                     case '1':
-                        return <ReadCourse/>
-                    
+                        return <GroupsOfStudent/>;
                     default:
                         return <NotFound/>
                 }
@@ -112,80 +109,67 @@ class Dashboard extends React.Component {
 
 
     render() {
-// const {
-//     token: {colorBgContainer, borderRadiusLG},
-// } = theme.useToken();
-        const {user, userRoles, collapsed, selectedKey} = this.state;
+        const {user, collapsed} = this.state;
 
-
-        const handleMenuClick = (item) => {
-            this.setState({
-                selectedKey: item.key,
-                visible: true,
-            })
-        };
-
-        const handleMenuHide = () => {
-            this.setState({
-                visible: false,
-            })
-        };
-
-        const onClick = (e) => {
-            this.setState({
-                itemNumber: e.key
-            })
-        }
-
-        /////////////set key ni men qoshdim //////zafar
-        const setKey = (group, key) => {
-            if (group !== null && group !== undefined && group) {
-                this.setState({
-                    itemNumber: key ? key : '2',
-                    group: group
-                })
-            }
-        }
-
-
+        // const handleMenuClick = (item) => {
+        //     this.setState({
+        //         selectedKey: item.key,
+        //         visible: true,
+        //     })
+        // };
+        //
+        // const handleMenuHide = () => {
+        //     this.setState({
+        //         visible: false,
+        //     })
+        // };
+        //
+        // const onClick = (e) => {
+        //     this.setState({
+        //         itemNumber: e.key
+        //     })
+        // }
+        //
+        // const setKey = (group, key) => {
+        //     if (group !== null && group !== undefined && group) {
+        //         this.setState({
+        //             itemNumber: key ? key : '2',
+        //             group: group
+        //         })
+        //     }
+        // }
+        //
+        //
         /////////////group id ni men qoshdim //////zafar
-        const renderContent = (group) => {
-            if (this.state.user) {
-                if (this.state.user.roleName) {
-                    let role = this.state.user.roleName
-                    if (role === 'ROLE_TEACHER') {
-
-                        // let itemKey = this.state.itemKey
-                        if (this.state.itemNumber) {
-                            if (this.state.itemNumber == 1) return <Teacher setKey={setKey} teacher={this.state.user}/>
-                            else if (this.state.itemNumber == 2)
-                                return <StudentOfGroup
-                                    setKey={setKey}
-                                    group={group}
-                                />
-                            // else if (this.state.itemNumber == 3) return <ReadStudent/>
-                        }
-                    } else if (role === 'ROLE_ADMIN') {
-                        if (this.state.itemNumber) {
-                            if (this.state.itemNumber == 1) return <ReadCourse/>
-                            else if (this.state.itemNumber == 2) return <ReadGroup/>
-                            else if (this.state.itemNumber == 3) return <ReadStudent/>
-                            else if (this.state.itemNumber == 4) return <ReadTeacher/>
-                            // else if (this.state.itemNumber == 5) return <ReadStudent/>
-                        }
-                    } else if (role === 'ROLE_STUDENT') {
-                        if (this.state.itemNumber) {
-                            if (this.state.itemNumber == 1) return <GroupsOfStudent/>
-                            // else if (this.state.itemNumber == 2) return <ReadGroup/>
-                            // else if (this.state.itemNumber == 3) return <ReadStudent/>
-                            // else if (this.state.itemNumber == 4) return <ReadTeacher/>
-                            // else if (this.state.itemNumber == 5) return <ReadStudent/>
-                        }
-                    }
-                }
-            }
-            return <NotFound setKey={setKey}/>;
-        };
+        // const renderContent = (group) => {
+        //     if (this.state.user) {
+        //         if (this.state.user.roleName) {
+        //             let role = this.state.user.roleName
+        //             if (role === 'ROLE_TEACHER') {
+        //
+        //                 // let itemKey = this.state.itemKey
+        //                 if (this.state.itemNumber) {
+        //                     if (this.state.itemNumber == 1) return <Teacher setKey={setKey} teacher={this.state.user}/>
+        //                     else if (this.state.itemNumber == 2)
+        //                         return <StudentOfGroup
+        //                             setKey={setKey}
+        //                             group={group}
+        //                         />
+        //                     // else if (this.state.itemNumber == 3) return <ReadStudent/>
+        //                 }
+        //             } else if (role === 'ROLE_ADMIN') {
+        //                 if (this.state.itemNumber) {
+        //                     if (this.state.itemNumber == 1) return <ReadCourse/>
+        //                     else if (this.state.itemNumber == 2) return <ReadGroup/>
+        //                     else if (this.state.itemNumber == 3) return <ReadStudent/>
+        //                     else if (this.state.itemNumber == 4) return <ReadTeacher/>
+        //                     // else if (this.state.itemNumber == 5) return <ReadStudent/>
+        //                 }
+        //             }
+        //         }
+        //     }
+        //     return <NotFound setKey={setKey}/>;
+        // };
 
         return (
 
@@ -205,7 +189,8 @@ class Dashboard extends React.Component {
                             }}
                             wrap size={16}>
                             <Avatar style={{
-                                width: '100%'
+                                width: '100%',
+                                alignItems: "center",
                             }} size={64} icon={collapsed ?
                                 <img
                                     style={{
@@ -226,6 +211,7 @@ class Dashboard extends React.Component {
                                 style={{
                                     color: 'white',
                                     textAlign: "center",
+                                    float: "center",
                                 }}>
                                 {
                                     collapsed ? `${user?.firstName.charAt(0)}${user?.lastName.charAt(0)}` :
@@ -236,7 +222,7 @@ class Dashboard extends React.Component {
                                 style={{
                                     color: 'white',
                                     textAlign: "center",
-
+                                    float: "center",
                                 }}> {collapsed ? '' : user?.roleName}
                             </h2>
                         </Space>
