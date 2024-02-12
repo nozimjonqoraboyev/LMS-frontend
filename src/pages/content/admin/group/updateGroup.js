@@ -2,7 +2,8 @@ import React, {useState} from 'react';
 import {Modal, Form, Input, Button, message, Select} from 'antd';
 import {CheckOutlined} from "@ant-design/icons";
 import axios from "axios";
-import {serverURL} from "../../../consts/serverConsts";
+import {serverURL} from "../../../../server/consts/serverConsts";
+import {getToken} from "../../../../util/TokenUtil";
 
 const UpdateGroupModal = ({isEditModalVisible, onClose, onSuccess, record}) => {
     const [form] = Form.useForm();
@@ -16,7 +17,6 @@ const UpdateGroupModal = ({isEditModalVisible, onClose, onSuccess, record}) => {
         },
     }
 
-    const [loading, setLoading] = useState(false);
     const [options, setOptions] = useState([]);
 
     const [loadingOptions, setLoadingOptions] = useState(false);
@@ -24,7 +24,11 @@ const UpdateGroupModal = ({isEditModalVisible, onClose, onSuccess, record}) => {
     const fetchCourses = async () => {
         try {
             setLoadingOptions(true);
-            const response = await axios.get(`${serverURL}course/courseIdAndName`);
+            const response = await axios.get(`${serverURL}admin/course/course-id-and-name`,{
+                headers:{
+                    Authorization: `Bearer ${getToken()}`
+                }
+            });
             const dto = response.data;
 
             if (dto.success) {
@@ -48,14 +52,18 @@ const UpdateGroupModal = ({isEditModalVisible, onClose, onSuccess, record}) => {
     const fetchTeachers = async () => {
         try {
             setLoadingOptions(true);
-            const response = await axios.get(`${serverURL}course/courseIdAndName`);
+            const response = await axios.get(`${serverURL}admin/user/teacher-id-and-username`,{
+                headers:{
+                    Authorization: `Bearer ${getToken()}`
+                }
+            });
             const dto = response.data;
 
             if (dto.success) {
                 const jsonData = dto.data;
                 const mappedOptions = jsonData.map(item => (
                     <Select.Option key={item.id} value={item.id}>
-                        {item.name}
+                        {item.username}
                     </Select.Option>
                 ));
                 setOptions(mappedOptions);
@@ -72,10 +80,11 @@ const UpdateGroupModal = ({isEditModalVisible, onClose, onSuccess, record}) => {
     const onFinish = (values) => {
         const jsonData = JSON.stringify(values);
         console.log(jsonData);
-        axios.put(serverURL + `group/update/` + record.id, jsonData, {
+        axios.put(serverURL + `admin/group/edit/` + record.id, jsonData, {
             headers: {
                 'Content-Type': 'application/json',
-            },
+                Authorization: `Bearer ${getToken()}`
+            }
         })
             .then((response) => {
                 console.log(response.data)
@@ -101,18 +110,10 @@ const UpdateGroupModal = ({isEditModalVisible, onClose, onSuccess, record}) => {
         form.resetFields();
     };
 
-    const onButtonClick = (e) => {
-        setLoading(true);
-        setTimeout(() => {
-            setLoading(false)
-        }, 1000);
-
-    };
-
     return (
         <Modal
             title="Update the group"
-            visible={isEditModalVisible}
+            open={isEditModalVisible}
             onCancel={handleCancel}
             footer={null}
             onOk={onSuccess}
@@ -147,7 +148,7 @@ const UpdateGroupModal = ({isEditModalVisible, onClose, onSuccess, record}) => {
                         allowClear
                         onClick={fetchTeachers}
                         loading={loadingOptions}
-                        defaultValue={record.courseName}
+                        defaultValue={record.teacherUsername}
                     >
                         {options}
                     </Select>
@@ -159,7 +160,7 @@ const UpdateGroupModal = ({isEditModalVisible, onClose, onSuccess, record}) => {
                                     allowClear style={{height: '50px'}}/>
                 </Form.Item>
                 <Form.Item>
-                    <Button type="primary" htmlType="submit" loading={loading} onClick={onButtonClick}
+                    <Button type="primary" htmlType="submit"
                             icon={<CheckOutlined/>}>
                         Submit
                     </Button>

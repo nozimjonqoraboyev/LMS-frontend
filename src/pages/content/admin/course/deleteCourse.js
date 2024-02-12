@@ -1,25 +1,29 @@
-import React, {useState} from 'react';
+import React from 'react';
 import {Modal, Button, message,Typography} from 'antd';
 import {CheckOutlined} from "@ant-design/icons";
 import axios from "axios";
-import {serverURL} from "../../../consts/serverConsts";
+import {serverURL} from "../../../../server/consts/serverConsts";
+import {getToken} from "../../../../util/TokenUtil";
 
 const {Text} = Typography;
 
-const DeleteCourseModal = ({isDeleteModalVisible, onClose, onSuccess, id}) => {
-
-    const [loading, setLoading] = useState(false);
+const DeleteCourseModal = ({isDeleteModalVisible, onClose, onSuccess, id, deletingCourse}) => {
 
     const onFinish = () => {
-        onButtonClick();
-        axios.delete(serverURL + `course/delete/${id}`)
+        axios.delete(serverURL + `admin/course/delete/${id}`,{
+            headers:{
+                Authorization: `Bearer ${getToken()}`
+            }})
             .then((response) => {
                 console.log(response.data);
                 if (response.data.success) {
-                    message.success('Course deleted successfully').then(onSuccess).then(onClose);
+                    message.success('Course deleted successfully');
+                    onSuccess();
+                    onClose();
 
                 } else {
-                    message.error("Ushbu kursga bog'langan guruhlar mavjud").then(onClose);
+                    message.error(response.data.message);
+                    onClose();
                 }
             })
             .catch((error) => {
@@ -33,26 +37,19 @@ const DeleteCourseModal = ({isDeleteModalVisible, onClose, onSuccess, id}) => {
         onClose();
     };
 
-    const onButtonClick = (e) => {
-        setLoading(true);
-        setTimeout(() => {
-            setLoading(false)
-        }, 1000);
-    };
-
     return (
         <Modal
             title="Delete the course"
-            visible={isDeleteModalVisible}
+            open={isDeleteModalVisible}
             onCancel={handleCancel}
             footer={null}
         >
-            <Text type="danger">Are you sure you want to delete this course?(id:{id})</Text>
+            <Text type="danger">Rostdan ham <b>{deletingCourse}</b> kursini o'chirmoqchimisiz?</Text>
             <br/>
             <br/>
-            <Button type="primary" htmlType="submit" loading={loading} onClick={onFinish}
+            <Button type="primary" htmlType="submit" onClick={onFinish}
                     icon={<CheckOutlined/>}>
-                Submit
+                Ha
             </Button>
         </Modal>
     );

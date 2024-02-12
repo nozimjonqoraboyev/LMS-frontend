@@ -1,8 +1,9 @@
-import React, {useState} from 'react';
+import React, {useEffect, useState} from 'react';
 import {Modal, Form, Input, Button, message} from 'antd';
 import {CheckOutlined} from "@ant-design/icons";
 import axios from "axios";
-import {serverURL} from "../../../consts/serverConsts";
+import {serverURL} from "../../../../server/consts/serverConsts";
+import {getToken} from "../../../../util/TokenUtil";
 
 const UpdateCourseModal = ({isEditModalVisible, onClose, onSuccess, record}) => {
     const [form] = Form.useForm();
@@ -16,14 +17,14 @@ const UpdateCourseModal = ({isEditModalVisible, onClose, onSuccess, record}) => 
         },
     }
 
-    const [loading, setLoading] = useState(false);
 
     const onFinish = (values) => {
         const jsonData = JSON.stringify(values);
-        axios.put(serverURL + `course/update/` + record.id, jsonData, {
+        axios.put(serverURL + `admin/course/edit/` + record.id, jsonData, {
             headers: {
                 'Content-Type': 'application/json',
-            },
+                Authorization: `Bearer ${getToken()}`
+            }
         })
             .then((response) => {
                 console.log(response.data)
@@ -41,26 +42,20 @@ const UpdateCourseModal = ({isEditModalVisible, onClose, onSuccess, record}) => 
                 message.error('An error occurred while editing the course');
                 form.resetFields();
             });
+
         console.log(jsonData)
     };
     const handleCancel = () => {
         message.info('Tahrirlash bekor qilindi');
-        onClose();
         form.resetFields();
-    };
-
-    const onButtonClick = (e) => {
-        setLoading(true);
-        setTimeout(() => {
-            setLoading(false)
-        }, 1000);
+        onClose();
 
     };
 
     return (
         <Modal
             title="Edit the course"
-            visible={isEditModalVisible}
+            open={isEditModalVisible}
             onCancel={handleCancel}
             footer={null}
             onOk={onSuccess}
@@ -81,7 +76,7 @@ const UpdateCourseModal = ({isEditModalVisible, onClose, onSuccess, record}) => 
                                     allowClear style={{height: '50px'}}/>
                 </Form.Item>
                 <Form.Item>
-                    <Button type="primary" htmlType="submit" loading={loading} onClick={onButtonClick}
+                    <Button type="primary" htmlType="submit"
                             icon={<CheckOutlined/>}>
                         Submit
                     </Button>

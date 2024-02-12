@@ -1,6 +1,6 @@
 import {Component, Fragment} from "react";
 import axios from "axios";
-import {serverURL} from "../../consts/serverConsts";
+import {serverURL} from "../../../server/consts/serverConsts";
 import {getToken} from "../../../util/TokenUtil";
 import {Button, Table} from "antd";
 import {getMyGroupUrl, getTeacherUrl, teacherGroupSize} from "./ConstData";

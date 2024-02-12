@@ -1,7 +1,7 @@
 import React, {Fragment, useState} from 'react';
 import {Modal, Form, Input, Button, message, Upload} from 'antd';
 import axios from "axios";
-import {serverURL} from "../../../consts/serverConsts";
+import {serverURL} from "../../../../server/consts/serverConsts";
 import {getToken} from "../../../../util/TokenUtil";
 
 import {UploadOutlined} from "@ant-design/icons";

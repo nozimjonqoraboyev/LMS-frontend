@@ -1,21 +1,22 @@
 import React from 'react';
+// import {Route, Routes} from "react-router-dom";
+// import {routesData} from "../consts/routesData";
 import {
     MenuFoldOutlined,
     MenuUnfoldOutlined,
 } from '@ant-design/icons';
-import {Layout, Menu, Button, theme, Avatar, Space} from 'antd';
+import {Layout, Menu, Button, Avatar, Space} from 'antd';
 import {userInfo} from "../../server/config/User";
-import {menus} from "../../data/menus";
-import {permissions} from "../../data/RolePermissions";
-import {Link} from "react-router-dom";
 import ReadCourse from "../content/admin/course/readCourse";
 import ReadGroup from "../content/admin/group/readGroup";
 import ReadTeacher from "../content/admin/teacher/readTeacher";
 import ReadStudent from "../content/admin/student/readStudent";
-import {getItems} from "../consts/serverConsts";
-import NotFound from "../../notFound/NotFound";
+import {getItems} from "../../server/consts/serverConsts";
+import NotFound from "../not_found/NotFound";
 import Teacher from "../content/teacher/Teacher";
 import StudentOfGroup from "../content/teacher/StudentOfGroup";
+import GroupsOfStudent from "../content/student/GroupsOfStudent";
+
 
 const imagePath = `./farobiy.png`;
 
@@ -23,15 +24,19 @@ const {Header, Sider, Content} = Layout;
 
 
 class Dashboard extends React.Component {
-    state = {
-        itemNumber: '1',
-        collapsed: false,
-        selectedKey: '1',
-        visible: false,
-        user: null,
-        userRoles: [],
-        items: [],
-        group: null
+    constructor(props) {
+        super(props);
+        this.state = {
+            itemNumber: '1',
+            collapsed: false,
+            selectedKey: '1',
+            visible: false,
+            user: null,
+            userRoles: [],
+            items: [],
+            group: null
+        }
+        this.getUserInfo();
     }
 
     getUserInfo = () => {
@@ -39,38 +44,78 @@ class Dashboard extends React.Component {
         userInfo().then(res => {
             if (res && res.data) {
                 let dto = res.data;
-                console.log(dto)
-                // console.log(dto.data)
                 this.setState({
                     user: dto.data,
-                })
-                if (dto.data) {
-                    if (dto.data.roleName && dto.data) {
-                        this.setState({
-                            items: getItems(dto.data ? dto.data.roleName : '')
-                        })
-                    }
-                } else {
-                    alert('user mavjud emas')
-                    this.setState({
-                        items: []
-                    })
-                }
+                    items: getItems(dto.data ? dto.data.roleName : ''),
+                });
+                console.log(dto.data);
+            } else {
+                alert('user mavjud emas');
             }
         })
 
     }
 
-    componentDidMount() {
-        this.getUserInfo();
+
+    renderContent = () => {
+        const {user, itemNumber} = this.state;
+        if (user) {
+            let role = user.roleName;
+            if (role === 'ROLE_TEACHER') {
+                if (itemNumber === '1') return <Teacher/>
+            } else if (role === 'ROLE_ADMIN') {
+                switch (itemNumber) {
+                    case '1':
+                        return <ReadCourse/>
+                    case '2':
+                        return <ReadGroup/>
+                    case '3':
+                        return <ReadStudent/>
+                    case '4':
+                        return <ReadTeacher/>
+                    default:
+                        return <NotFound/>
+                }
+            } else if (role === 'ROLE_STUDENT') {
+                switch (itemNumber) {
+                    case '1':
+                        return <ReadCourse/>
+                    
+                    default:
+                        return <NotFound/>
+                }
+            } else {
+                return <NotFound/>;
+            }
+        }
+    };
+
+
+    handleMenuClick = (item) => {
+        this.setState({
+            selectedKey: item.key,
+            visible: true,
+        })
+    };
+
+    handleMenuHide = () => {
+        this.setState({
+            visible: false,
+        })
+    };
+
+    onClick = (e) => {
+        this.setState({
+            itemNumber: e.key,
+        })
     }
 
 
     render() {
+// const {
+//     token: {colorBgContainer, borderRadiusLG},
+// } = theme.useToken();
         const {user, userRoles, collapsed, selectedKey} = this.state;
-        // const {
-        //     token: {colorBgContainer, borderRadiusLG},
-        // } = theme.useToken();
 
 
         const handleMenuClick = (item) => {
@@ -85,19 +130,7 @@ class Dashboard extends React.Component {
                 visible: false,
             })
         };
-        const makeMenus = () => {
-            const {userRoles} = this.state;
 
-            return menus
-                .filter(menu =>
-                    permissions.some(p => userRoles.includes(p.role_name) && p.links.includes(menu.link))
-                )
-                .map(menu => (
-                    <Menu.Item key={menu.link} icon={menu.icon}>
-                        <Link to={menu.link}>{menu.title}</Link>
-                    </Menu.Item>
-                ));
-        };
         const onClick = (e) => {
             this.setState({
                 itemNumber: e.key
@@ -106,7 +139,7 @@ class Dashboard extends React.Component {
 
         /////////////set key ni men qoshdim //////zafar
         const setKey = (group, key) => {
-            if (group  !== null && group !== undefined && group ) {
+            if (group !== null && group !== undefined && group) {
                 this.setState({
                     itemNumber: key ? key : '2',
                     group: group
@@ -126,10 +159,10 @@ class Dashboard extends React.Component {
                         if (this.state.itemNumber) {
                             if (this.state.itemNumber == 1) return <Teacher setKey={setKey} teacher={this.state.user}/>
                             else if (this.state.itemNumber == 2)
-                                return   <StudentOfGroup
-                                setKey={setKey}
-                                group={group}
-                            />
+                                return <StudentOfGroup
+                                    setKey={setKey}
+                                    group={group}
+                                />
                             // else if (this.state.itemNumber == 3) return <ReadStudent/>
                         }
                     } else if (role === 'ROLE_ADMIN') {
@@ -140,6 +173,14 @@ class Dashboard extends React.Component {
                             else if (this.state.itemNumber == 4) return <ReadTeacher/>
                             // else if (this.state.itemNumber == 5) return <ReadStudent/>
                         }
+                    } else if (role === 'ROLE_STUDENT') {
+                        if (this.state.itemNumber) {
+                            if (this.state.itemNumber == 1) return <GroupsOfStudent/>
+                            // else if (this.state.itemNumber == 2) return <ReadGroup/>
+                            // else if (this.state.itemNumber == 3) return <ReadStudent/>
+                            // else if (this.state.itemNumber == 4) return <ReadTeacher/>
+                            // else if (this.state.itemNumber == 5) return <ReadStudent/>
+                        }
                     }
                 }
             }
@@ -148,18 +189,19 @@ class Dashboard extends React.Component {
 
         return (
 
-            <Layout style={{minHeight: '100%'}}>
+            <Layout style={{minHeight: '100vh'}}>
 
                 <Sider trigger={null} collapsible collapsed={collapsed}>
                     <Space direction="vertical" size={16}>
                         <Space
-                            onClick={() => window.location.href = "/"}
+                            // onClick={() => window.location.href = "/"}
                             style={{
                                 display: "flex",
                                 justifyContent: "space-around",
                                 alignItems: "center",
                                 flexDirection: "column",
-                                paddingTop: '10%'
+                                paddingTop: '10%',
+                                height: '100%',
                             }}
                             wrap size={16}>
                             <Avatar style={{
@@ -180,23 +222,21 @@ class Dashboard extends React.Component {
                                     src={imagePath}
                                     alt="Farobiy logo"/>
                             }/>
-                            <h5
-                                style={{
-                                    color: 'white',
-                                }}>{collapsed ? 'LMS' : 'Learning Management System'}
-                            </h5>
                             <h2
                                 style={{
                                     color: 'white',
+                                    textAlign: "center",
                                 }}>
                                 {
                                     collapsed ? `${user?.firstName.charAt(0)}${user?.lastName.charAt(0)}` :
-                                    `${user?.firstName} ${user?.lastName}`
+                                        `${user?.firstName} ${user?.lastName}`
                                 }
                             </h2>
                             <h2
                                 style={{
                                     color: 'white',
+                                    textAlign: "center",
+
                                 }}> {collapsed ? '' : user?.roleName}
                             </h2>
                         </Space>
@@ -207,14 +247,13 @@ class Dashboard extends React.Component {
                     <Menu
                         theme="dark"
                         mode="inline"
-                        defaultSelectedKeys={this.state.itemNumber}
-                        onSelect={handleMenuClick}
+                        defaultSelectedKeys={[this.state.itemNumber]}
+                        onSelect={this.handleMenuClick}
                         onClick={(e) => {
-                            onClick(e)
+                            this.onClick(e)
                         }}
-                        items={this.state.items.filter((item) => !item.visible)}
+                        items={this.state.items}
                     >
-                        {makeMenus()}
                     </Menu>
                 </Sider>
                 <Layout style={{minHeight: '100%'}}>
@@ -235,6 +274,8 @@ class Dashboard extends React.Component {
                             }}
                         />
                     </Header>
+
+
                     <Content
                         style={{
                             margin: '24px 16px',
@@ -244,12 +285,25 @@ class Dashboard extends React.Component {
                             borderRadius: 8,
                         }}
                     >
-                        {renderContent(this.state.group)}
-                        {/*{selectedKey === '1' && <ReadCourse onHide={handleMenuHide}/>}*/}
-                        {/*{selectedKey === '2' && <ReadGroup onHide={handleMenuHide}/>}*/}
-                        {/*{selectedKey === '3' && <ReadTeacher onHide={handleMenuHide}/>}*/}
-                        {/*{selectedKey === '4' && <ReadStudent onHide={handleMenuHide}/>}*/}
+                        {this.renderContent()}
+                        {/*{renderContent(this.state.group)}*/}
                     </Content>
+                    {/*<Routes*/}
+                    {/*    style={{*/}
+                    {/*        margin: '24px 16px',*/}
+                    {/*        padding: 24,*/}
+                    {/*        minHeight: 280,*/}
+                    {/*    }}*/}
+                    {/*>*/}
+                    {/*    {routesData.map((value) => (*/}
+                    {/*        <Route*/}
+                    {/*            path={value.path}*/}
+                    {/*            element={value.component}*/}
+                    {/*            key={value.path}*/}
+                    {/*        />*/}
+                    {/*    ))}*/}
+                    {/*    /!*<Route path="*" element={<NotFound/>}/>*!/*/}
+                    {/*</Routes>*/}
                 </Layout>
             </Layout>
         );
