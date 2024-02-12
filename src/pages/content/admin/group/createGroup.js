@@ -2,8 +2,9 @@ import React, {useEffect, useState} from 'react';
 import {Modal, Form, Input, Button, message, Select} from 'antd';
 import {PlusOutlined} from "@ant-design/icons";
 import axios from "axios";
-import {serverURL} from "../../../consts/serverConsts";
+import {serverURL} from "../../../../server/consts/serverConsts";
 import async from "async";
+import {getToken} from "../../../../util/TokenUtil";
 
 
 const CreateGroupModal = ({isAddModalVisible, onClose, onSuccess}) => {
@@ -15,7 +16,11 @@ const CreateGroupModal = ({isAddModalVisible, onClose, onSuccess}) => {
     const fetchCourses = async () => {
         try {
             setLoadingOptions(true);
-            const response = await axios.get(`${serverURL}course/courseIdAndName`);
+            const response = await axios.get(`${serverURL}admin/course/course-id-and-name`,{
+                headers:{
+                    Authorization: `Bearer ${getToken()}`
+                }
+            });
             const dto = response.data;
 
             if (dto.success) {
@@ -40,14 +45,18 @@ const CreateGroupModal = ({isAddModalVisible, onClose, onSuccess}) => {
     const fetchTeachers =async () => {
         try {
             setLoadingOptions(true);
-            const response = await axios.get(`${serverURL}teacher/teacherIdAndName`);
+            const response = await axios.get(`${serverURL}admin/teacher-id-and-username`,{
+                headers:{
+                    Authorization: `Bearer ${getToken()}`
+                }
+            });
             const dto = response.data;
 
             if (dto.success) {
                 const jsonData = dto.data;
                 const mappedOptions = jsonData.map(item => (
                     <Select.Option key={item.id} value={item.id}>
-                        {item.name}
+                        {item.username}
                     </Select.Option>
                 ));
                 setOptions(mappedOptions);
@@ -73,15 +82,15 @@ const CreateGroupModal = ({isAddModalVisible, onClose, onSuccess}) => {
         },
     }
 
-    const [loading, setLoading] = useState(false);
 
     const onFinish = (values) => {
         const jsonData = JSON.stringify(values);
         console.log(jsonData);
-        axios.post(serverURL + 'group/create', jsonData, {
+        axios.post(serverURL + 'admin/group/create', jsonData, {
             headers: {
                 'Content-Type': 'application/json',
-            },
+                Authorization: `Bearer ${getToken()}`
+            }
         })
             .then((response) => {
                 if (response.data.success) {
@@ -101,14 +110,6 @@ const CreateGroupModal = ({isAddModalVisible, onClose, onSuccess}) => {
         message.info("Qo'shish bekor qilindi");
         form.resetFields();
         onClose();
-    };
-
-    const onButtonClick = (e) => {
-        setLoading(true);
-        setTimeout(() => {
-            setLoading(false)
-        }, 1000);
-
     };
 
     return (
@@ -136,7 +137,7 @@ const CreateGroupModal = ({isAddModalVisible, onClose, onSuccess}) => {
                     </Select>
 
                 </Form.Item>
-                <Form.Item label="Teacher name" name="teacherId"
+                <Form.Item label="Teacher username" name="teacherId"
                            rules={[{required: true, message: 'Please select a teacher!'}]} {...formItemLayout}  >
                     <Select
                         placeholder='Select teacher'
@@ -154,7 +155,7 @@ const CreateGroupModal = ({isAddModalVisible, onClose, onSuccess}) => {
                                     allowClear style={{height: '50px'}}/>
                 </Form.Item>
                 <Form.Item>
-                    <Button type="primary" htmlType="submit" loading={loading} onClick={onButtonClick}
+                    <Button type="primary" htmlType="submit"
                             icon={<PlusOutlined />}>
                         Add Group
                     </Button>

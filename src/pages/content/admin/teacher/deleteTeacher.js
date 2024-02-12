@@ -2,14 +2,19 @@ import React from 'react';
 import {Modal, Button, message,Typography} from 'antd';
 import {CheckOutlined} from "@ant-design/icons";
 import axios from "axios";
-import {serverURL} from "../../../consts/serverConsts";
+import {serverURL} from "../../../../server/consts/serverConsts";
+import {getToken} from "../../../../util/TokenUtil";
 
 const {Text} = Typography;
 
 const DeleteStudentModal = ({isDeleteModalVisible, onClose, onSuccess, id, name}) => {
 
     const onFinish = () => {
-        axios.delete(serverURL + `teacher/delete/${id}`)
+        axios.delete(serverURL + `admin/delete/${id}`,{
+            headers:{
+                Authorization: `Bearer ${getToken()}`
+            }
+        })
             .then((response) => {
                 console.log(response.data);
                 if (response.data.success) {
@@ -34,11 +39,11 @@ const DeleteStudentModal = ({isDeleteModalVisible, onClose, onSuccess, id, name}
     return (
         <Modal
             title="Delete the teacher"
-            visible={isDeleteModalVisible}
+            open={isDeleteModalVisible}
             onCancel={handleCancel}
             footer={null}
         >
-            <Text type="danger">Rostan ham {name}ni o'chirmoqchimisiz?</Text>
+            <Text type="danger">Rostan ham {name} ustozni o'chirmoqchimisiz?</Text>
             <br/>
             <br/>
             <Button

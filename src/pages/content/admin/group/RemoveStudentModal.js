@@ -1,4 +1,4 @@
-import React, {useState} from 'react';
+import React from 'react';
 import {Modal, Button, message,Typography} from 'antd';
 import {CheckOutlined} from "@ant-design/icons";
 import axios from "axios";
@@ -7,28 +7,26 @@ import {getToken} from "../../../../util/TokenUtil";
 
 const {Text} = Typography;
 
-const DeleteStudentModal = ({isDeleteModalVisible, onClose, onSuccess, id, name}) => {
-
+const RemoveStudentModal = ({isRemoveStudentModalVisible, onClose, onSuccess, studentId, name, groupId}) => {
 
     const onFinish = () => {
-
-        axios.delete(serverURL + `admin/delete/${id}`,{
+        axios.delete(serverURL + `admin/group/remove-student/${studentId}?group-id=${groupId}`,{
             headers:{
                 Authorization: `Bearer ${getToken()}`
             }
         })
             .then((response) => {
-                console.log(response.data);
                 if (response.data.success) {
-                    message.success(name+' o\'chirildi').then(onSuccess).then(onClose);
-
+                    message.success('Student removed from the group');
+                    onSuccess();
+                    onClose();
                 } else {
-                    message.error(response.data.message).then(onClose);
+                    message.info("Muammo yuz berdi ")
                 }
             })
             .catch((error) => {
                 console.log(error)
-                message.error('An error occurred while deleting the student');
+                message.error('An error occurred while removing the student');
             });
     };
 
@@ -37,14 +35,14 @@ const DeleteStudentModal = ({isDeleteModalVisible, onClose, onSuccess, id, name}
         onClose();
     };
 
-    return (
+    return(
         <Modal
-            title="Delete the student"
-            open={isDeleteModalVisible}
+            title="Remove the student"
+            open={isRemoveStudentModalVisible}
             onCancel={handleCancel}
             footer={null}
         >
-            <Text type="danger">Rostan ham {name}ni o'chirmoqchimisiz?</Text>
+            <Text type="danger">{name}ni rostdan ham guruhdan chiqarmoqchimisiz?</Text>
             <br/>
             <br/>
             <Button
@@ -53,10 +51,10 @@ const DeleteStudentModal = ({isDeleteModalVisible, onClose, onSuccess, id, name}
                 onClick={onFinish}
                 icon={<CheckOutlined/>}
             >
-                O'chirish
+                Ha
             </Button>
         </Modal>
-    );
+    )
 };
 
-export default DeleteStudentModal;
+export default RemoveStudentModal;

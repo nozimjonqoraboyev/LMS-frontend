@@ -1,8 +1,9 @@
-import React, {useState} from 'react';
-import {Modal, Form, Input, Button, message, Select} from 'antd';
+import React from 'react';
+import {Modal, Form, Input, Button, message, DatePicker} from 'antd';
 import {PlusOutlined} from "@ant-design/icons";
 import axios from "axios";
-import {serverURL} from "../../../consts/serverConsts";
+import {serverURL} from "../../../../server/consts/serverConsts";
+import {getToken} from "../../../../util/TokenUtil";
 
 
 const CreateTeacherModal = ({isAddModalVisible, onClose, onSuccess}) => {
@@ -23,10 +24,11 @@ const CreateTeacherModal = ({isAddModalVisible, onClose, onSuccess}) => {
         console.log(values);
         const jsonData = JSON.stringify(values);
         console.log(jsonData);
-        axios.post(serverURL + 'teacher/create', jsonData, {
+        axios.post(serverURL + 'admin/save', jsonData, {
             headers: {
                 'Content-Type': 'application/json',
-            },
+                Authorization: `Bearer ${getToken()}`
+            }
         })
             .then((response) => {
                 if (response.data.success) {
@@ -52,13 +54,16 @@ const CreateTeacherModal = ({isAddModalVisible, onClose, onSuccess}) => {
 
     return (
         <Modal
-            title="Add New Student"
+            title="Add New Teacher"
             open={isAddModalVisible}
             onCancel={handleCancel}
             footer={null}
             onOk={onSuccess}
         >
             <Form form={form} onFinish={onFinish} size={"large"}>
+                <Form.Item name="roleId" initialValue={2} hidden={true}>
+
+                </Form.Item>
                 <Form.Item label="First name" name="firstName"
                            rules={[{required: true, message: 'Please enter first name!'}]} {...formItemLayout}  >
                     <Input placeholder='Enter name' maxLength={30} allowClear/>
@@ -67,17 +72,34 @@ const CreateTeacherModal = ({isAddModalVisible, onClose, onSuccess}) => {
                            rules={[{required: true, message: 'Please enter last name!'}]} {...formItemLayout}  >
                     <Input placeholder='Enter name' maxLength={30} allowClear/>
                 </Form.Item>
-                <Form.Item label="Phone number" name="phoneNumber"
+                <Form.Item label="Phone" name="phone"
                            rules={[{required: true, message: 'Please enter phone number!'}]} {...formItemLayout}  >
-                    <Input placeholder='Enter phone number' maxLength={30} allowClear/>
+                    <Input placeholder='Enter phone number' maxLength={16} allowClear/>
                 </Form.Item>
-                <Form.Item label="Age" name="age"
-                           rules={[{required: true, message: 'Please enter age!'}]} {...formItemLayout}  >
-                    <Input placeholder='Enter age' maxLength={2} allowClear/>
+                <Form.Item label="Email" name="email"
+                           rules={[{required: true, message: 'Please enter an e-mail!'}]} {...formItemLayout}  >
+                    <Input placeholder='Enter an e-mail' maxLength={40} allowClear/>
+                </Form.Item>
+                <Form.Item label="Address" name="address"
+                           rules={[{required: true, message: 'Please enter address!'}]} {...formItemLayout}  >
+                    <Input placeholder='Enter address' maxLength={40} allowClear/>
+                </Form.Item>
+                <Form.Item label="Birth Date" name="birthDate"
+                           rules={[{required: true, message: 'Please enter birth date!'}]} {...formItemLayout}  >
+                    <DatePicker/>
+                </Form.Item>
+                <Form.Item label="Username" name="username"
+                           rules={[{required: true, message: 'Please enter username!'}]} {...formItemLayout}  >
+                    <Input placeholder='Enter username' maxLength={8} allowClear/>
+                </Form.Item>
+                <Form.Item label="Password" name="password"
+                           rules={[{required: true, message: 'Please enter a password!'}]} {...formItemLayout}  >
+                    <Input placeholder='Enter a password' maxLength={8} allowClear/>
                 </Form.Item>
                 <Form.Item>
-                    <Button type="primary" htmlType="submit" icon={<PlusOutlined/>}>
-                        Add Student
+                    <Button type="primary" htmlType="submit"
+                            icon={<PlusOutlined/>}>
+                        Add New Teacher
                     </Button>
                 </Form.Item>
             </Form>

@@ -1,8 +1,9 @@
-import React, {useState} from 'react';
+import React from 'react';
 import {Modal, Form, Input, Button, message} from 'antd';
 import {PlusOutlined} from "@ant-design/icons";
 import axios from "axios";
-import {serverURL} from "../../../consts/serverConsts";
+import {serverURL} from "../../../../server/consts/serverConsts";
+import {getToken} from "../../../../util/TokenUtil";
 
 
 
@@ -18,13 +19,12 @@ const CreateCourseModal = ({isAddModalVisible, onClose, onSuccess}) => {
         },
     }
 
-    const [loading, setLoading] = useState(false);
-
     const onFinish = (values) => {
         const jsonData = JSON.stringify(values);
-        axios.post(serverURL + 'course/create', jsonData, {
+        axios.post(serverURL + 'admin/course/create', jsonData, {
             headers: {
                 'Content-Type': 'application/json',
+                Authorization: `Bearer ${getToken()}`
             }
         })
             .then((response) => {
@@ -38,6 +38,7 @@ const CreateCourseModal = ({isAddModalVisible, onClose, onSuccess}) => {
                 }
             })
             .catch((error) => {
+                console.log(error)
                 message.error('An error occurred while adding the course').then(() => () => form.resetFields());
             });
     };
@@ -47,18 +48,10 @@ const CreateCourseModal = ({isAddModalVisible, onClose, onSuccess}) => {
         onClose();
     };
 
-    const onButtonClick = (e) => {
-        setLoading(true);
-        setTimeout(() => {
-            setLoading(false)
-        }, 2000);
-
-    };
-
     return (
         <Modal
             title="Add New Course"
-            visible={isAddModalVisible}
+            open={isAddModalVisible}
             onCancel={handleCancel}
             footer={null}
             onOk={onSuccess}
@@ -74,7 +67,7 @@ const CreateCourseModal = ({isAddModalVisible, onClose, onSuccess}) => {
                                     allowClear style={{height: '50px'}}/>
                 </Form.Item>
                 <Form.Item>
-                    <Button type="primary" htmlType="submit" loading={loading} onClick={onButtonClick}
+                    <Button type="primary" htmlType="submit"
                             icon={<PlusOutlined/>}>
                         Add Course
                     </Button>

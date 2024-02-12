@@ -1,4 +1,4 @@
-import {serverURL} from "../../consts/serverConsts";
+import {serverURL} from "../../../server/consts/serverConsts";
 
 export const getMyGroupUrl = (teacherId, size, page) => {
     return `${serverURL}teacher/group/groups-of-teacher/${teacherId}?page=${page}&size=${size}`

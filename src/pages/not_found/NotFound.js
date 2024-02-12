@@ -21,16 +21,15 @@ class NotFound extends React.Component {
                                     <div className="contant_box_404">
                                         <h3 className="h2">Ushbu sahifa mavjud emas</h3>
 
-                                        <p>Ushbu sahifa mavjud emas</p>
 
-                                        <Button
+                                       <Button
                                             style={{
                                                 backgroundColor:'greenyellow',
                                                 color:'#fff'
                                         }}
-                                            onClick={() => this.props.setKey('1','1')}
+                                            onClick={() => this.props.setKey('1','1')}>To back</Button>
 
-                                        >Asosiy sahifaga qaytish</Button>
+
                                     </div>
                                 </div>
                             </div>

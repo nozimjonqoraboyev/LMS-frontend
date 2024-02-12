@@ -1,24 +1,27 @@
-import React, {useState} from 'react';
+import React from 'react';
 import {Modal, Button, message,Typography} from 'antd';
 import {CheckOutlined} from "@ant-design/icons";
 import axios from "axios";
-import {serverURL} from "../../../consts/serverConsts";
+import {serverURL} from "../../../../server/consts/serverConsts";
+import {getToken} from "../../../../util/TokenUtil";
 
 const {Text} = Typography;
 
 const DeleteGroupModal = ({isDeleteModalVisible, onClose, onSuccess, id}) => {
-
-    const [loading, setLoading] = useState(false);
-
     const onFinish = () => {
-        onButtonClick();
-        axios.delete(serverURL + `group/delete/${id}`)
+        axios.delete(serverURL + `admin/group/delete/${id}`,{
+            headers:{
+                Authorization: `Bearer ${getToken()}`
+            }
+        })
             .then((response) => {
                 if (response.data.success) {
-                    message.success('Group deleted successfully').then(onSuccess).then(onClose);
-
+                    message.success('Group deleted successfully');
+                    onSuccess();
+                    onClose();
                 } else {
-                    message.error("Ushbu guruhga bog'langan studentlar mavjud").then(onClose);
+                    message.error(response.data.message);
+                    onClose();
                 }
             })
             .catch((error) => {
@@ -32,34 +35,26 @@ const DeleteGroupModal = ({isDeleteModalVisible, onClose, onSuccess, id}) => {
         onClose();
     };
 
-    const onButtonClick = (e) => {
-        setLoading(true);
-        setTimeout(() => {
-            setLoading(false)
-        }, 1000);
-    };
-
-    return (
+    return(
         <Modal
             title="Delete the group"
             open={isDeleteModalVisible}
             onCancel={handleCancel}
             footer={null}
         >
-            <Text type="danger">Are you sure you want to delete this group?(id:{id})</Text>
+            <Text type="danger">Guruhni o'chirmoqchimisiz?</Text>
             <br/>
             <br/>
             <Button
                 type="primary"
                 htmlType="submit"
-                loading={loading}
                 onClick={onFinish}
                 icon={<CheckOutlined/>}
             >
                 Submit
             </Button>
         </Modal>
-    );
+    )
 };
 
 export default DeleteGroupModal;

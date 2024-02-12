@@ -2,24 +2,26 @@ import React, {Fragment} from "react";
 import {Component} from "react";
 import {Button, Space, Table} from "antd";
 import axios from "axios";
-import {DeleteOutlined, EditOutlined, FormOutlined} from "@ant-design/icons";
+import { ArrowRightOutlined, FormOutlined} from "@ant-design/icons";
 import CreateGroupModal from "./createGroup";
-import UpdateGroupModal from "./updateGroup";
-import DeleteGroupModal from "./deleteGroup";
-import {serverURL} from "../../../consts/serverConsts";
+import {serverURL} from "../../../../server/consts/serverConsts";
+import Search from "antd/es/input/Search";
+import {getToken} from "../../../../util/TokenUtil";
+import ActionsInGroup from "./ActionsInGroup";
+import {formatDate} from "../../../../App";
 
 
 class ReadGroup extends Component {
-   /* constructor(props) {
+    constructor(props) {
         super(props);
         this.state = {
             dataSource: [],
             totalPages: 0,
             page: 0,
             size: 10,
+            searchText: '',
             isAddModalVisible: false,
-            isEditModalVisible: false,
-            isDeleteModalVisible: false,
+            isActionsInGroupVisible:false,
             record: {},
             deletingId: 0,
         };
@@ -29,14 +31,31 @@ class ReadGroup extends Component {
             isAddModalVisible: false,
             isEditModalVisible: false,
             isDeleteModalVisible: false,
+            isActionsInGroupVisible: false,
         })
     };
+    onSearch = (searchText) => {
+        this.setState({
+            searchText: searchText,
+            page: 0,
+        }, () => this.getData())
+    }
+    handlePagination = (e) => {
+        this.setState({
+            page: e - 1
+        }, () => this.getData())
+    }
 
     getData() {
-        const {page, size} = this.state;
+        const {page, size, searchText} = this.state;
+        let url = searchText ? `${serverURL}admin/group/search?searching=${searchText}&page=${page}&size=${size}`
+            : `${serverURL}admin/group/list?page=${page}&size=${size}`;
         axios({
-            url: `${serverURL}group/list?page=${page}&size=${size}`,
+            url:url ,
             method: "GET",
+            headers: {
+                Authorization: `Bearer ${getToken()}`
+            }
         })
             .then((res) => {
                 let dto = res.data;
@@ -68,39 +87,48 @@ class ReadGroup extends Component {
         });
     };
 
-    handleEdit = (record) => {
+    handleActionsInGroup = (record) => {
         this.setState({
-            isEditModalVisible: true,
+            isActionsInGroupVisible: true,
             record: record,
         });
     };
 
-    handleDelete = (id) => {
-        this.setState({
-            isDeleteModalVisible: true,
-            deletingId: id,
-        });
-    };
-*/
+
     render() {
         const columns = [
             {
-                title: 'ID',
-                dataIndex: 'id',
-                key: 'id',
-                sorter: (a, b) => a.id - b.id
+                title: 'No',
+                dataIndex: 'index',
+                key: 'index',
+                render: (text, record, index) => index + 1,
             },
             {
                 title: 'Name',
                 dataIndex: 'name',
                 key: 'name',
-                sorter: (a, b) => a.id - b.id
             },
             {
                 title: 'Course name',
                 dataIndex: 'courseName',
                 key: 'courseName',
-                sorter: (a, b) => a.id - b.id
+            },
+            {
+                title: 'Teacher username',
+                dataIndex: 'teacherUsername',
+                key: 'teacherUsername',
+            },
+            {
+                title: 'Created at',
+                dataIndex: 'createAt',
+                key: 'createAt',
+                render: createAt => formatDate(createAt),
+            },
+            {
+                title: 'Updated at',
+                dataIndex: 'updateAt',
+                key: 'updateAt',
+                render: updateAt => formatDate(updateAt),
             },
             {
                 title: 'Description',
@@ -108,49 +136,53 @@ class ReadGroup extends Component {
                 key: 'description',
             },
             {
-                title: 'Action',
+                title: 'Enter to group',
                 key: 'action',
                 render: (record) => (
                     <Space size="middle">
-                        <a onClick={() => this.handleEdit(record)}><EditOutlined/></a>
-                        <a onClick={() => this.handleDelete(record.id)}><DeleteOutlined/></a>
+                        <a onClick={() => this.handleActionsInGroup(record)}><ArrowRightOutlined /></a>
                     </Space>
                 ),
             },
         ];
 
-        // const {dataSource, isAddModalVisible, isEditModalVisible, isDeleteModalVisible} = this.state;
+        const {dataSource, isAddModalVisible,isActionsInGroupVisible } = this.state;
 
         return (
-            <Fragment>
-                {/*<Table*/}
-                {/*    dataSource={dataSource}*/}
-                {/*    columns={columns}*/}
-                {/*>*/}
-                {/*</Table>*/}
-                {/*<Button type="primary" onClick={this.handleAdd} icon={<FormOutlined/>}>*/}
-                {/*    New Group*/}
-                {/*</Button>*/}
-                {/*<CreateGroupModal*/}
-                {/*    isAddModalVisible={isAddModalVisible}*/}
-                {/*    onSuccess={this.handleSuccess}*/}
-                {/*    onCancel={this.hideModal}*/}
-                {/*    onClose={this.hideModal}*/}
-                {/*/>*/}
-                {/*<UpdateGroupModal*/}
-                {/*    isEditModalVisible={isEditModalVisible}*/}
-                {/*    record={this.state.record}*/}
-                {/*    onClose={this.hideModal}*/}
-                {/*    onSuccess={this.handleSuccess}*/}
-                {/*/>*/}
-                {/*<DeleteGroupModal*/}
-                {/*    isDeleteModalVisible={isDeleteModalVisible}*/}
-                {/*    id={this.state.deletingId}*/}
-                {/*    onClose={this.hideModal}*/}
-                {/*    onSuccess={this.handleSuccess}*/}
-                {/*/>*/}
-                GROUPS
-            </Fragment>
+            <div>
+                {isActionsInGroupVisible ? <ActionsInGroup
+                        record={this.state.record}
+                        onClose={this.hideModal}
+                    /> :
+                    <Fragment>
+                        <div style={{width: '100%', display: "flex", justifyContent: "space-between"}}>
+                            <h2>Groups</h2>
+                            <div style={{width: '400px', float: "right", marginTop: '15px'}}>
+                                <Search onSearch={(value) => this.onSearch(value)}/>
+                            </div>
+                        </div>
+                        <Table
+                            dataSource={dataSource}
+                            columns={columns}
+                            pagination={{
+                                pageSize: this.state.size,
+                                total: this.state.totalPages,
+                                onChange: this.handlePagination,
+                            }}
+                        >
+                        </Table>
+                        <Button type="primary" onClick={this.handleAdd} icon={<FormOutlined/>}>
+                            New Group
+                        </Button>
+                        {isAddModalVisible && (<CreateGroupModal
+                            isAddModalVisible={isAddModalVisible}
+                            onSuccess={this.handleSuccess}
+                            onCancel={this.hideModal}
+                            onClose={this.hideModal}
+                        />)}
+                    </Fragment>
+                }
+            </div>
         );
 
     }
