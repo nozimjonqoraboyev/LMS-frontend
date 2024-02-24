@@ -24,3 +24,5 @@ export const menus=[
         label: <Link to={"/my-tasks/list"}>My tasks</Link>
     },
 ]
+
+{"_id":1, "fullname":"Toshmat", "age":20}

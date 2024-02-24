@@ -16,7 +16,7 @@ class Login extends React.Component {
         backgroundSize: 'cover',
         backgroundRepeat: 'no-repeat',
         width: "100%",
-        minHeight: '100vh',
+        height: '69vh',
         margin: "0 auto",
         paddingTop: '15%',
     };

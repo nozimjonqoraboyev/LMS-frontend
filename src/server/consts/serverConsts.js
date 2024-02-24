@@ -12,11 +12,11 @@ export let getItems = (role) => {
                 icon: <GroupOutlined/>,
                 label: <p>My groups</p>,
             },
-            {
-                key: 2,
-                icon: <GroupOutlined/>,
-                label: <p>Students of group</p>,
-            }
+            // {
+            //     key: 2,
+            //     icon: <GroupOutlined/>,
+            //     label: <p>Students of group</p>,
+            // }
             // ,{
             //     key: undefined,
             //     icon: <GroupOutlined/>,

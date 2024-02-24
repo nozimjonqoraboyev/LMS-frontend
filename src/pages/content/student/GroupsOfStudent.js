@@ -1,6 +1,6 @@
 import React, {Fragment} from "react";
 import {Component} from "react";
-import {message, Space, Table} from "antd";
+import {Button, message, Space, Table} from "antd";
 import axios from "axios";
 import {ArrowRightOutlined} from "@ant-design/icons";
 import Search from "antd/es/input/Search";
@@ -16,7 +16,7 @@ class GroupsOfStudent extends Component {
             dataSource: [],
             searchText: null,
             isHomeworkVisible: false,
-            groupId: 0,
+            record: {},
         };
     }
 
@@ -46,7 +46,6 @@ class GroupsOfStudent extends Component {
         })
             .then((res) => {
                 let dto = res.data;
-                console.log(dto);
                 if (dto.success) {
                     this.setState({
                         dataSource: dto.data,
@@ -69,10 +68,10 @@ class GroupsOfStudent extends Component {
         this.getData();
     }
 
-    handleHomework = (id) => {
+    handleHomework = (record) => {
         this.setState({
             isHomeworkVisible: true,
-            groupId: id,
+            record: record,
         });
     };
 
@@ -104,24 +103,25 @@ class GroupsOfStudent extends Component {
                 key: 'action',
                 render: (record) => (
                     <Space size="middle">
-                        <a onClick={() => this.handleHomework(record.id)}><ArrowRightOutlined/></a>
+                        <Button onClick={() => this.handleHomework(record)}><ArrowRightOutlined/> Vazifalar</Button>
                     </Space>
                 ),
             },
         ];
 
-        const {dataSource, isHomeworkVisible} = this.state;
+        const {dataSource, isHomeworkVisible,record} = this.state;
 
         return (<div>
             {isHomeworkVisible ? <Homework
                 isHomeworkVisible={isHomeworkVisible}
                 onSuccess={this.handleSuccess}
                 onClose={this.hideModal}
+                record={record}
             /> : <Fragment>
                 <div style={{width: '100%', display: "flex", justifyContent: "space-between"}}>
                     <h2>My groups</h2>
                     <div style={{width: '400px', float: "right", marginTop: '15px'}}>
-                        <Search onSearch={(value) => this.onSearch(value)}/>
+                        <Search />
                     </div>
                 </div>
                 <Table
