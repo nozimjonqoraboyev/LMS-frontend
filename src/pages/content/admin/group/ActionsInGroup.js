@@ -26,7 +26,6 @@ class ActionsInGroup extends Component {
             deletingStudentId: 0,
             deletingStudentName: '',
             deletingId: 0,
-            isActionsInGroupVisible: true,
             record: {},
         };
     }
@@ -108,8 +107,6 @@ class ActionsInGroup extends Component {
         });
     };
 
-
-
     handleBack = () => {
         this.props.onClose();
     };
@@ -147,11 +144,10 @@ class ActionsInGroup extends Component {
             },
         ];
 
-        const {dataSource, isAddStudentModalVisible, isRemoveStudentModalVisible, isEditModalVisible, isDeleteModalVisible, isActionsInGroupVisible} = this.state;
+        const {dataSource, isAddStudentModalVisible, isRemoveStudentModalVisible, isEditModalVisible, isDeleteModalVisible} = this.state;
 
         return (
-            <div>
-                {isActionsInGroupVisible && (<Fragment>
+                 <Fragment>
                     <h2>{this.props.record.name} guruhi <a onClick={this.handleEdit}><EditOutlined/> </a> <Button
                         type="dashed" onClick={this.handleBack} icon={<ArrowLeftOutlined/>}
                         style={{float: "right", marginBottom: '5px'}}>
@@ -201,8 +197,7 @@ class ActionsInGroup extends Component {
                         onClose={this.hideModal}
                         onSuccess={this.handleSuccess}
                     />)}
-                </Fragment>)}
-            </div>
+                </Fragment>
         );
     }
 }

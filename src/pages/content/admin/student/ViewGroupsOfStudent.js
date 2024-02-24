@@ -45,7 +45,7 @@ const ViewGroupsOfStudent = ({ isViewGroupsModalVisible, name, onClose , student
             key: 'groupName',
         },
         {
-            title: 'Teacher name',
+            title: 'Teacher',
             dataIndex: 'teacherName',
             key: 'teacherName',
         },

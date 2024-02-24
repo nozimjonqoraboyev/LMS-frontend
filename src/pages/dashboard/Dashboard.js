@@ -1,19 +1,24 @@
 import React from 'react';
 import {
+    ArrowLeftOutlined,
     MenuFoldOutlined,
     MenuUnfoldOutlined,
+    ProfileOutlined,
+    SettingOutlined,
+    BellOutlined
 } from '@ant-design/icons';
-import {Layout, Menu, Button, Avatar, Space} from 'antd';
+import {Layout, Menu, Button, Avatar, Space, Dropdown} from 'antd';
 import {userInfo} from "../../server/config/User";
 import ReadCourse from "../content/admin/course/readCourse";
 import ReadGroup from "../content/admin/group/readGroup";
 import ReadTeacher from "../content/admin/teacher/readTeacher";
 import ReadStudent from "../content/admin/student/readStudent";
-import Teacher from "../content/teacher/Teacher";
-import StudentOfGroup from "../content/teacher/StudentOfGroup";
+import GroupsList from "../content/teacher/GroupsList";
 import {getItems} from "../../server/consts/serverConsts";
 import NotFound from "../not_found/NotFound";
 import GroupsOfStudent from "../content/student/GroupsOfStudent";
+import {deleteToken} from "../../util/TokenUtil";
+import Clock from "../const/Clock";
 
 
 const imagePath = `./farobiy.png`;
@@ -32,7 +37,7 @@ class Dashboard extends React.Component {
             user: null,
             userRoles: [],
             items: [],
-            group: null
+            group: null,
         }
         this.getUserInfo();
     }
@@ -46,7 +51,6 @@ class Dashboard extends React.Component {
                     user: dto.data,
                     items: getItems(dto.data ? dto.data.roleName : ''),
                 });
-                console.log(dto.data);
             } else {
                 alert('user mavjud emas');
             }
@@ -60,7 +64,7 @@ class Dashboard extends React.Component {
         if (user) {
             let role = user.roleName;
             if (role === 'ROLE_TEACHER') {
-                if (itemNumber === '1') return <Teacher/>
+                if (itemNumber === '1') return <GroupsList/>
             } else if (role === 'ROLE_ADMIN') {
                 switch (itemNumber) {
                     case '1':
@@ -107,73 +111,35 @@ class Dashboard extends React.Component {
         })
     }
 
+    handleLogOut = () => {
+        deleteToken();
+        window.location.reload();
+    };
+
 
     render() {
         const {user, collapsed} = this.state;
-
-        // const handleMenuClick = (item) => {
-        //     this.setState({
-        //         selectedKey: item.key,
-        //         visible: true,
-        //     })
-        // };
-        //
-        // const handleMenuHide = () => {
-        //     this.setState({
-        //         visible: false,
-        //     })
-        // };
-        //
-        // const onClick = (e) => {
-        //     this.setState({
-        //         itemNumber: e.key
-        //     })
-        // }
-        //
-        // const setKey = (group, key) => {
-        //     if (group !== null && group !== undefined && group) {
-        //         this.setState({
-        //             itemNumber: key ? key : '2',
-        //             group: group
-        //         })
-        //     }
-        // }
-        //
-        //
-        /////////////group id ni men qoshdim //////zafar
-        // const renderContent = (group) => {
-        //     if (this.state.user) {
-        //         if (this.state.user.roleName) {
-        //             let role = this.state.user.roleName
-        //             if (role === 'ROLE_TEACHER') {
-        //
-        //                 // let itemKey = this.state.itemKey
-        //                 if (this.state.itemNumber) {
-        //                     if (this.state.itemNumber == 1) return <Teacher setKey={setKey} teacher={this.state.user}/>
-        //                     else if (this.state.itemNumber == 2)
-        //                         return <StudentOfGroup
-        //                             setKey={setKey}
-        //                             group={group}
-        //                         />
-        //                     // else if (this.state.itemNumber == 3) return <ReadStudent/>
-        //                 }
-        //             } else if (role === 'ROLE_ADMIN') {
-        //                 if (this.state.itemNumber) {
-        //                     if (this.state.itemNumber == 1) return <ReadCourse/>
-        //                     else if (this.state.itemNumber == 2) return <ReadGroup/>
-        //                     else if (this.state.itemNumber == 3) return <ReadStudent/>
-        //                     else if (this.state.itemNumber == 4) return <ReadTeacher/>
-        //                     // else if (this.state.itemNumber == 5) return <ReadStudent/>
-        //                 }
-        //             }
-        //         }
-        //     }
-        //     return <NotFound setKey={setKey}/>;
-        // };
-
+        const items=[
+            {
+                key: '1',
+                label: (
+                    <a  >
+                        <SettingOutlined />&nbsp;&nbsp;Sozlamalar
+                    </a>
+                ),
+            },
+            {
+                key: '2',
+                label:(
+                    <a onClick={this.handleLogOut}>
+                        <ArrowLeftOutlined />&nbsp;&nbsp;Chiqish
+                    </a>
+                )
+            },
+        ]
         return (
 
-            <Layout style={{minHeight: '100vh'}}>
+            <Layout style={{minHeight: '100vh', margin: 0, padding: 0}}>
 
                 <Sider trigger={null} collapsible collapsed={collapsed}>
                     <Space direction="vertical" size={16}>
@@ -243,22 +209,38 @@ class Dashboard extends React.Component {
                     </Menu>
                 </Sider>
                 <Layout style={{minHeight: '100%'}}>
-                    <Header
-                        style={{
-                            padding: 0,
-                            background: '#ffffff',
-                        }}
-                    >
-                        <Button
-                            type="text"
-                            icon={collapsed ? <MenuUnfoldOutlined/> : <MenuFoldOutlined/>}
-                            onClick={() => this.setState({collapsed: !collapsed})}
-                            style={{
-                                fontSize: '16px',
-                                width: 64,
-                                height: 64,
-                            }}
-                        />
+                    <Header style={{
+                        height: "10vh",
+                        padding: 0,
+                        background: '#ffffff',
+                        display: 'flex',
+                        justifyContent: 'space-between',
+                        alignItems: 'center'
+                    }}>
+                        <div>
+                            <Button
+                                type="text"
+                                icon={collapsed ? <MenuUnfoldOutlined/> : <MenuFoldOutlined/>}
+                                onClick={() => this.setState({collapsed: !collapsed})}
+                                style={{
+                                    fontSize: '16px',
+                                    width: 64,
+                                    height: 64,
+                                }}
+                            />
+                        </div>
+                        <div style={{display: 'flex', alignItems: 'center', marginRight: "5vh", height: "2vh"}}>
+                            {user?.roleName === 'ROLE_STUDENT' ? <BellOutlined style={{fontSize:"3vh"}}/> : ''}
+                            <Clock/>
+                            <Dropdown
+                                menu={{
+                                    items,
+                                }}
+                                placement="bottomRight"
+                            >
+                                <a style={{fontSize: "4vh"}}><ProfileOutlined/> </a>
+                            </Dropdown>
+                        </div>
                     </Header>
 
 
@@ -272,7 +254,6 @@ class Dashboard extends React.Component {
                         }}
                     >
                         {this.renderContent()}
-                        {/*{renderContent(this.state.group)}*/}
                     </Content>
                     {/*<Routes*/}
                     {/*    style={{*/}

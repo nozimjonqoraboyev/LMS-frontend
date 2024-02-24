@@ -137,7 +137,7 @@ const CreateGroupModal = ({isAddModalVisible, onClose, onSuccess}) => {
                     </Select>
 
                 </Form.Item>
-                <Form.Item label="Teacher" name="teacherId"
+                <Form.Item label="GroupsList" name="teacherId"
                            rules={[{required: true, message: 'Please select a teacher!'}]} {...formItemLayout}  >
                     <Select
                         placeholder='Select teacher'

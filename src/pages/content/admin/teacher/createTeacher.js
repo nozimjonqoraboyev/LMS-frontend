@@ -54,7 +54,7 @@ const CreateTeacherModal = ({isAddModalVisible, onClose, onSuccess}) => {
 
     return (
         <Modal
-            title="Add New Teacher"
+            title="Add New GroupsList"
             open={isAddModalVisible}
             onCancel={handleCancel}
             footer={null}
@@ -99,7 +99,7 @@ const CreateTeacherModal = ({isAddModalVisible, onClose, onSuccess}) => {
                 <Form.Item>
                     <Button type="primary" htmlType="submit"
                             icon={<PlusOutlined/>}>
-                        Add New Teacher
+                        Add New GroupsList
                     </Button>
                 </Form.Item>
             </Form>

@@ -141,7 +141,7 @@ const UpdateGroupModal = ({isEditModalVisible, onClose, onSuccess, record}) => {
                     </Select>
 
                 </Form.Item>
-                <Form.Item label="Teacher name" name="teacherId"
+                <Form.Item label="GroupsList name" name="teacherId"
                            rules={[{required: true, message: 'Please select a teacher!'}]} {...formItemLayout}  >
                     <Select
                         placeholder='Select course'
